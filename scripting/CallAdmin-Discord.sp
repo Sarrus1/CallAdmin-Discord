@@ -3,6 +3,7 @@
 #include <colorvariables>
 #include <discordWebhookAPI>
 #include <rankme>
+#include <sourcebanschecker>
 #include <sourcemod>
 #pragma newdecls required
 #pragma semicolon 1
@@ -125,12 +126,12 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 
 	GetClientName(iClient, szNameClient, sizeof szNameClient);
 	GetClientAuthId(iClient, AuthId_SteamID64, szSteamClientID, sizeof szSteamClientID);
-	Format(szClientID, sizeof szClientID, "[%s](https://steamcommunity.com/profiles/%s)", szNameClient, szSteamClientID);
+	Format(szClientID, sizeof szClientID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameClient, szSteamClientID, SBCheckerGetClientsBans(iClient), SBCheckerGetClientsComms(iClient));
 
 	GetClientName(iTarget, szNameTarget, sizeof szNameTarget);
 	GetClientAuthId(iTarget, AuthId_SteamID64, szSteamTargetID, sizeof szSteamTargetID);
 
-	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s)", szNameTarget, szSteamTargetID);
+	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameTarget, szSteamTargetID, SBCheckerGetClientsBans(iTarget), SBCheckerGetClientsComms(iTarget));
 
 	char szClientStats[32], szTargetStats[32];
 	int  stClient[35], stTarget[35];
