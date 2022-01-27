@@ -117,7 +117,7 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 
 	// Format title
 	char szTitle[256];
-	Format(szTitle, sizeof szTitle, "**%s** (steam://connect/%s:%s)", g_szHostname, g_szIP, g_szPort);
+	Format(szTitle, sizeof szTitle, "**steam://connect/%s:%s**", g_szIP, g_szPort);
 	embed.SetTitle(szTitle);
 
 	// Format Message
@@ -141,8 +141,8 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 	UnixToTime(stClient[9], szClientTime, sizeof szClientTime);
 	UnixToTime(stTarget[9], szTargetTime, sizeof szTargetTime);
 
-	Format(szClientStats, sizeof szClientStats, "**%d**pts - %s", RankMe_GetPoints(iClient), szClientTime);
-	Format(szTargetStats, sizeof szTargetStats, "**%d**pts - %s", RankMe_GetPoints(iTarget), szTargetTime);
+	Format(szClientStats, sizeof szClientStats, "**%d**pts - %s", RankMe_GetPoints(iClient, true), szClientTime);
+	Format(szTargetStats, sizeof szTargetStats, "**%d**pts - %s", RankMe_GetPoints(iTarget, true), szTargetTime);
 
 	char szClientSess[32], szTargetSess[32];
 
