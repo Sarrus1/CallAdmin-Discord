@@ -102,7 +102,7 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 	GetConVarString(g_cvMention, szMention, sizeof szMention);
 	if (!StrEqual(szMention, ""))  // Checks if mention is disabled
 	{
-		// hook.SetContent(szMention);
+		hook.SetContent(szMention);
 	}
 	char szCalladminName[64];
 	GetConVarString(g_cvBotUsername, szCalladminName, sizeof szCalladminName);
@@ -132,13 +132,6 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 
 	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s)", szNameTarget, szSteamTargetID);
 
-	EmbedField field = new EmbedField("Reason", szReason, true);
-	embed.AddField(field);
-	field = new EmbedField("Reporter", szClientID, true);
-	embed.AddField(field);
-	field = new EmbedField("Target", szTargetID, true);
-	embed.AddField(field);
-
 	char szClientStats[32], szTargetStats[32];
 	int  stClient[35], stTarget[35];
 	RankMe_GetStats(iClient, stClient);
@@ -151,11 +144,6 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 	Format(szClientStats, sizeof szClientStats, "**%d**pts - %s", RankMe_GetPoints(iClient), szClientTime);
 	Format(szTargetStats, sizeof szTargetStats, "**%d**pts - %s", RankMe_GetPoints(iTarget), szTargetTime);
 
-	field = new EmbedField("Target stats", szClientStats, true);
-	embed.AddField(field);
-	field = new EmbedField("Reporter stats", szTargetStats, true);
-	embed.AddField(field);
-
 	char szClientSess[32], szTargetSess[32];
 
 	char szClientTimeSess[32], szTargetTimeSess[32];
@@ -166,9 +154,27 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 	Format(szClientSess, sizeof szClientSess, "**%d**kills/**%d**deaths - %s", GetClientFrags(iClient), GetClientDeaths(iClient), szClientTimeSess);
 	Format(szTargetSess, sizeof szTargetSess, "**%d**kills/**%d**deaths - %s", GetClientFrags(iTarget), GetClientDeaths(iTarget), szTargetTimeSess);
 
-	field = new EmbedField("Target stats", szClientSess, true);
+	// Add reporter fields
+	EmbedField field = new EmbedField("Reporter", szClientID, true);
 	embed.AddField(field);
-	field = new EmbedField("Reporter stats", szTargetSess, true);
+
+	field = new EmbedField("Global stats", szClientStats, true);
+	embed.AddField(field);
+
+	field = new EmbedField("Session stats", szClientSess, true);
+	embed.AddField(field);
+
+	// Add target fields
+	field = new EmbedField("Target", szTargetID, true);
+	embed.AddField(field);
+
+	field = new EmbedField("Global stats", szTargetStats, true);
+	embed.AddField(field);
+
+	field = new EmbedField("Session stats", szTargetSess, true);
+	embed.AddField(field);
+
+	field = new EmbedField("Reason", szReason, true);
 	embed.AddField(field);
 
 	// Add Footer
