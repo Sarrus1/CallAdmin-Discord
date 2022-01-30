@@ -8,7 +8,6 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-
 public Plugin myinfo =
 {
 	name        = "CallAmin-Discord",
@@ -22,7 +21,8 @@ ConVar g_cvWebhookURL;
 ConVar g_cvMention;
 ConVar g_cvBotUsername;
 ConVar g_cvFooterUrl;
-ConVar g_cvEmbedColor;
+ConVar g_cvEmbedCallColor;
+ConVar g_cvEmbedClaimColor;
 ConVar g_cvHostname;
 ConVar g_cvIP;
 ConVar g_cvPort;
@@ -43,13 +43,14 @@ enum WaitingFor
 public void
 	OnPluginStart()
 {
-	g_cvWebhookURL  = CreateConVar("calladmin_discord_webhook", "", "The webhook to the discord channel where you want main record messages to be sent.", FCVAR_PROTECTED);
-	g_cvMention     = CreateConVar("calladmin_discord_mention", "@here", "Optional discord mention to ping users when a new record has been set.");
-	g_cvBotUsername = CreateConVar("calladmin_discord_username", "CallAdmin BOT", "Username of the bot");
-	g_cvFooterUrl   = CreateConVar("calladmin_discord_footer_url", "https://images-ext-1.discordapp.net/external/tfTL-r42Kv1qP4FFY6sQYDT1BBA2fXzDjVmcknAOwNI/https/images-ext-2.discordapp.net/external/3K6ho0iMG_dIVSlaf0hFluQFRGqC2jkO9vWFUlWYOnM/https/images-ext-2.discordapp.net/external/aO9crvExsYt5_mvL72MFLp92zqYJfTnteRqczxg7wWI/https/discordsl.com/assets/img/img.png", "The url of the footer icon, leave blank to disable.");
-	g_cvEmbedColor  = CreateConVar("calladmin_discord_embed_color", "0x00ffff", "Color of the embed for when main wr is beaten. Replace the usual '#' with '0x'.");
-	g_cvIP          = CreateConVar("calladmin_discord_ip", "0.0.0.0", "Set your server IP here when auto detection is not working for you. (Use 0.0.0.0 to disable manually override)");
-	g_cvHostname    = FindConVar("hostname");
+	g_cvWebhookURL      = CreateConVar("calladmin_discord_webhook", "", "The webhook to the discord channel where you want calladmin messages to be sent.", FCVAR_PROTECTED);
+	g_cvMention         = CreateConVar("calladmin_discord_mention", "@here", "Optional discord mention to ping users when a calladmin is sent.");
+	g_cvBotUsername     = CreateConVar("calladmin_discord_username", "CallAdmin BOT", "Username of the bot");
+	g_cvFooterUrl       = CreateConVar("calladmin_discord_footer_url", "https://images-ext-1.discordapp.net/external/tfTL-r42Kv1qP4FFY6sQYDT1BBA2fXzDjVmcknAOwNI/https/images-ext-2.discordapp.net/external/3K6ho0iMG_dIVSlaf0hFluQFRGqC2jkO9vWFUlWYOnM/https/images-ext-2.discordapp.net/external/aO9crvExsYt5_mvL72MFLp92zqYJfTnteRqczxg7wWI/https/discordsl.com/assets/img/img.png", "The url of the footer icon, leave blank to disable.");
+	g_cvEmbedCallColor  = CreateConVar("calladmin_discord_call_embed_color", "0xff0000", "Color of the embed when a calladmin is made. Replace the usual '#' with '0x'.");
+	g_cvEmbedClaimColor = CreateConVar("calladmin_discord_claim_embed_color", "0x00ff00", "Color of the embed when a calladmin is claimed. Replace the usual '#' with '0x'.");
+	g_cvIP              = CreateConVar("calladmin_discord_ip", "0.0.0.0", "Set your server IP here when auto detection is not working for you. (Use 0.0.0.0 to disable manually override)");
+	g_cvHostname        = FindConVar("hostname");
 	g_cvHostname.GetString(g_szHostname, sizeof g_szHostname);
 	// g_cvHostname.AddChangeHook(OnConVarChanged);
 
@@ -67,10 +68,9 @@ public void
 	g_cvPort.GetString(g_szPort, sizeof g_szPort);
 
 	RegAdminCmd("sm_calladmin_discordtest", CommandDiscordTest, ADMFLAG_ROOT, "Test the discord announcement");
-
+	RegAdminCmd("sm_claim", cmdClaim, ADMFLAG_BAN);
 	AutoExecConfig(true, "CallAdmin-Discord");
 }
-
 
 public Action CommandDiscordTest(int client, int args)
 {
@@ -80,13 +80,7 @@ public Action CommandDiscordTest(int client, int args)
 	return Plugin_Handled;
 }
 
-
 public void CallAdmin_OnReportPost(int iClient, int iTarget, const char[] szReason)
-{
-	sendDiscordMessage(iClient, iTarget, "A reason");
-}
-
-void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 {
 	char webhook[1024];
 	GetConVarString(g_cvWebhookURL, webhook, 1024);
@@ -113,7 +107,7 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 	Embed embed = new Embed();
 
 	char color[16];
-	GetConVarString(g_cvEmbedColor, color, sizeof color);
+	GetConVarString(g_cvEmbedCallColor, color, sizeof color);
 	embed.SetColor(StringToInt(color, 16));
 
 	// Format title
@@ -203,6 +197,69 @@ void sendDiscordMessage(int iClient, int iTarget, char[] szReason)
 	delete hook;
 }
 
+public Action cmdClaim(int iClient, int args)
+{
+	char webhook[1024];
+	GetConVarString(g_cvWebhookURL, webhook, 1024);
+	if (StrEqual(webhook, ""))
+	{
+		PrintToServer("[CallAdmin-Discord] No webhook specified, aborting.");
+		return;
+	}
+
+	// Send Discord Announcement
+	Webhook hook = new Webhook();
+
+	char szCalladminName[64];
+	GetConVarString(g_cvBotUsername, szCalladminName, sizeof szCalladminName);
+
+	hook.SetUsername(szCalladminName);
+
+	Embed embed = new Embed();
+
+	char color[16];
+	GetConVarString(g_cvEmbedClaimColor, color, sizeof color);
+	embed.SetColor(StringToInt(color, 16));
+
+	// Format title
+	char szTitle[256];
+	Format(szTitle, sizeof szTitle, "**steam://connect/%s:%s**", g_szIP, g_szPort);
+	embed.SetTitle(szTitle);
+
+	// Add body
+	char szBody[256], szName[256], szSteamClientID[64];
+	GetClientName(iClient, szName, sizeof szName);
+	GetClientAuthId(iClient, AuthId_SteamID64, szSteamClientID, sizeof szSteamClientID);
+
+	Format(szBody, sizeof szBody, "[%s](https://steamcommunity.com/profiles/%s) is claiming reports on this server.", szName, szSteamClientID);
+	embed.SetDescription(szBody);
+
+	// Add Footer
+	EmbedFooter footer = new EmbedFooter();
+	char        buffer[1000];
+	Format(buffer, sizeof buffer, "Server: %s", g_szHostname);
+	footer.SetText(buffer);
+
+	char szFooterUrl[1024];
+	GetConVarString(g_cvFooterUrl, szFooterUrl, sizeof szFooterUrl);
+	if (!StrEqual(szFooterUrl, ""))
+	{
+		footer.SetIconURL(szFooterUrl);
+		embed.SetFooter(footer);
+	}
+
+	hook.AddEmbed(embed);
+	if (g_bDebugging)
+	{
+		char szDebugOutput[10000];
+		hook.ToString(szDebugOutput, sizeof szDebugOutput);
+		PrintToServer(szDebugOutput);
+	}
+	hook.Execute(webhook, OnWebHookExecuted, iClient);
+	delete hook;
+
+	CReplyToCommand(iClient, "[CALLADMIN] {purple} You have claimed the reports on the server.");
+}
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
