@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name        = "CallAmin-Discord",
 	author      = "Sarrus",
 	description = "Send a discord message detailing the reason of the calladmin and more.",
-	version     = "1.0.0",
+	version     = "1.0.1",
 	url         = "https://github.com/Sarrus1/CallAmin-Discord"
 };
 
