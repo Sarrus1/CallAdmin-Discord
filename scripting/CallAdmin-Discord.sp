@@ -95,7 +95,7 @@ public void CallAdmin_OnReportPost(int iClient, int iTarget, const char[] szReas
 
 	char szMention[128];
 	GetConVarString(g_cvMention, szMention, sizeof szMention);
-	if (!StrEqual(szMention, ""))  // Checks if mention is disabled
+	if (!StrEqual(szMention, ""))    // Checks if mention is disabled
 	{
 		hook.SetContent(szMention);
 	}
@@ -120,12 +120,12 @@ public void CallAdmin_OnReportPost(int iClient, int iTarget, const char[] szReas
 
 	GetClientName(iClient, szNameClient, sizeof szNameClient);
 	GetClientAuthId(iClient, AuthId_SteamID64, szSteamClientID, sizeof szSteamClientID);
-	Format(szClientID, sizeof szClientID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameClient, szSteamClientID, SBCheckerGetClientsBans(iClient), SBCheckerGetClientsComms(iClient));
+	Format(szClientID, sizeof szClientID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameClient, szSteamClientID, SBPP_CheckerGetClientsBans(iClient), SBPP_CheckerGetClientsComms(iClient));
 
 	GetClientName(iTarget, szNameTarget, sizeof szNameTarget);
 	GetClientAuthId(iTarget, AuthId_SteamID64, szSteamTargetID, sizeof szSteamTargetID);
 
-	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameTarget, szSteamTargetID, SBCheckerGetClientsBans(iTarget), SBCheckerGetClientsComms(iTarget));
+	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameTarget, szSteamTargetID, SBPP_CheckerGetClientsBans(iTarget), SBPP_CheckerGetClientsComms(iTarget));
 
 	char szClientStats[32], szTargetStats[32];
 	int  stClient[35], stTarget[35];
