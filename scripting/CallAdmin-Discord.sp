@@ -120,12 +120,12 @@ public void CallAdmin_OnReportPost(int iClient, int iTarget, const char[] szReas
 
 	GetClientName(iClient, szNameClient, sizeof szNameClient);
 	GetClientAuthId(iClient, AuthId_SteamID64, szSteamClientID, sizeof szSteamClientID);
-	Format(szClientID, sizeof szClientID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameClient, szSteamClientID, SBCheckerGetClientsBans(iClient), SBCheckerGetClientsComms(iClient));
+	Format(szClientID, sizeof szClientID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameClient, szSteamClientID, SBPP_CheckerGetClientsBans(iClient), SBPP_CheckerGetClientsComms(iClient));
 
 	GetClientName(iTarget, szNameTarget, sizeof szNameTarget);
 	GetClientAuthId(iTarget, AuthId_SteamID64, szSteamTargetID, sizeof szSteamTargetID);
 
-	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameTarget, szSteamTargetID, SBCheckerGetClientsBans(iTarget), SBCheckerGetClientsComms(iTarget));
+	Format(szTargetID, sizeof szTargetID, "[%s](https://steamcommunity.com/profiles/%s) - %d bans/ %d comms", szNameTarget, szSteamTargetID, SBPP_CheckerGetClientsBans(iTarget), SBPP_CheckerGetClientsComms(iTarget));
 
 	char szClientStats[32], szTargetStats[32];
 	int  stClient[35], stTarget[35];
@@ -204,7 +204,7 @@ public Action cmdClaim(int iClient, int args)
 	if (StrEqual(webhook, ""))
 	{
 		PrintToServer("[CallAdmin-Discord] No webhook specified, aborting.");
-		return;
+		return Plugin_Handled;
 	}
 
 	// Send Discord Announcement
@@ -259,6 +259,8 @@ public Action cmdClaim(int iClient, int args)
 	delete hook;
 
 	CReplyToCommand(iClient, "[CALLADMIN] {purple} You have claimed the reports on the server.");
+
+	return Plugin_Continue;
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

@@ -1,7 +1,7 @@
 ﻿// *************************************************************************
 //  This file is part of SourceBans++.
 //
-//  Copyright (C) 2014-2019 SourceBans++ Dev Team <https://github.com/sbpp>
+//  Copyright (C) 2014-2023 SourceBans++ Dev Team <https://github.com/sbpp>
 //
 //  SourceBans++ is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ public SharedPlugin __pl_sourcebanschecker =
 #if !defined REQUIRE_PLUGIN
 public void __pl_sourcebanschecker_SetNTVOptional()
 {
-	MarkNativeAsOptional("SBCheckerGetClientsBans");
-  MarkNativeAsOptional("SBCheckerGetClientsComms");
+	MarkNativeAsOptional("SBPP_CheckerGetClientsBans");
+	MarkNativeAsOptional("SBPP_CheckerGetClientsComms");
 }
 #endif
 
@@ -55,7 +55,7 @@ public void __pl_sourcebanschecker_SetNTVOptional()
  * @param iClient	The client index of who you want to get the number of bans.
  * @return        The number of bans of the client.
  *********************************************************/
-native int SBCheckerGetClientsBans(int iClient);
+native int SBPP_CheckerGetClientsBans(int iClient);
 
 
 /*********************************************************
@@ -64,4 +64,4 @@ native int SBCheckerGetClientsBans(int iClient);
  * @param iClient	The client index of who you want to get the number of comms bans.
  * @return        The number of comms bans of the client.
  *********************************************************/
-native int SBCheckerGetClientsComms(int iClient);
+native int SBPP_CheckerGetClientsComms(int iClient);
