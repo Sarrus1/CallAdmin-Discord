@@ -95,7 +95,7 @@ public void CallAdmin_OnReportPost(int iClient, int iTarget, const char[] szReas
 
 	char szMention[128];
 	GetConVarString(g_cvMention, szMention, sizeof szMention);
-	if (!StrEqual(szMention, ""))  // Checks if mention is disabled
+	if (!StrEqual(szMention, ""))    // Checks if mention is disabled
 	{
 		hook.SetContent(szMention);
 	}
